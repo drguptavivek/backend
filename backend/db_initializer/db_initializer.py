@@ -1,11 +1,38 @@
 import logging
+from pprint import pp
+import click
+from sqlalchemy.sql import text
+
 from backend.extensions import db
-from backend.models.user_model import Department, Cadre, Designation, Unit
+from backend.models.user_model import Account, Department, Cadre, Designation, Unit, User
+from config import ProdConfig
 # https://github.com/melihcolpan/flask-restful-login/blob/master/api/db_initializer/db_initializer.py
 # https://docs.sqlalchemy.org/en/20/orm/quickstart.html#create-objects-and-persist
 
 
+
+@click.command('init-db')
+def init_db_command():
+    """Seed the tables."""
+    from backend.db_initializer.db_initializer import create_department
+    create_department()
+    from backend.db_initializer.db_initializer import create_faculty_cadre
+    create_faculty_cadre()
+    create_user()
+    click.echo('Seeded the database.')
+
+
 def create_department():
+    database = db.engine.url.database #    pp (database)
+    stmt1 = text('SET FOREIGN_KEY_CHECKS=0')
+    stmt2 = text('TRUNCATE TABLE ' + database +'.departments')
+    stmt3 = text('TRUNCATE TABLE ' + database +'.units')
+    stmt4 = text('SET FOREIGN_KEY_CHECKS=1')
+    db.session.execute(stmt1)
+    db.session.execute(stmt2)
+    db.session.execute(stmt3)
+    db.session.execute(stmt4)
+
     department = Department.query.filter_by(abbr="RPC").first()
     if department is None:
         department = Department(
@@ -45,6 +72,15 @@ def create_department():
 
 
 def create_faculty_cadre():
+    database = db.engine.url.database #    pp (database)
+    stmt1 = text('SET FOREIGN_KEY_CHECKS=0')
+    stmt2 = text('TRUNCATE TABLE ' + database +'.cadres')
+    stmt3 = text('TRUNCATE TABLE ' + database +'.designations')
+    stmt4 = text('SET FOREIGN_KEY_CHECKS=1')
+    db.session.execute(stmt1)
+    db.session.execute(stmt2)
+    db.session.execute(stmt3)
+    db.session.execute(stmt4)
     cadre = Cadre.query.filter_by(name="Faculty").first()
     if cadre is None:
         cadre = Cadre(
@@ -58,10 +94,44 @@ def create_faculty_cadre():
         )
         db.session.add(cadre)
         db.session.commit()
-        logging.info(f"{cadre}  Added.")
+        logging.info(f"Faculty Cadre and Designations Added.")
 
     else:
-        logging.info(f"cadre {cadre} already set.")
+        logging.info(f"Faculty Cadre and Designations already set.")
+
+
+
+
+
+def create_user():
+    database = db.engine.url.database #    pp (database)
+    stmt1 = text('SET FOREIGN_KEY_CHECKS=0')
+    stmt2 = text('TRUNCATE TABLE ' + database +'.users')
+    #stmt3 = text('TRUNCATE TABLE ' + database +'.designations')
+    stmt4 = text('SET FOREIGN_KEY_CHECKS=1')
+    db.session.execute(stmt1)
+    db.session.execute(stmt2)
+    #db.session.execute(stmt3)
+    db.session.execute(stmt4)
+    user = User.query.filter_by(email="vivekgupta@aiims.gov.in").first()
+    if user is None:
+        user = User(
+            fullname="Dr Vivek Gupta",
+            employee_id="E100056",
+            email="vivekgupta@aiims.gov.in",
+            mobile="9899410420",
+            department_id = "1",
+            designation_id = "3",
+            inactive = "0",
+        )
+        db.session.add(user)
+        db.session.commit()
+        logging.info(f"User Vivek Gupta Added.")
+
+    else:
+        logging.info(f"User Vivek Gupta already set.")
+
+
 
 
 
