@@ -24,14 +24,15 @@ flask --app backend seed-db
 ### VERSION CONTROL
 The 'main' branch contains all the main code
 The other branches will have code developed in various machines / users
-All work done on the various machines will be COMMITted locally. Then 
+All work done on the various machines will be COMMITted locally. 
+Once work is completed - 
 1. PUSH from local branch to the GitHub remote branch 
 2. Create Pull Request: eg. 
    - https://github.com/drguptavivek/backend/pull/new/vivek/mcbook
    - https://github.com/drguptavivek/backend/pull/new/desktop
 3. Merge the branch on GitHub with main
 4. Checkout the main on local machine
-
+5. 
 
 ```shell
 git clone https://github.com/drguptavivek/backend.git
