@@ -22,23 +22,25 @@ flask --app backend seed-db
 ```
 
 ### VERSION CONTROL
-The 'main' branch contains all the main code
-The other branches will have code developed in various machines / users
-All work done on the various machines will be COMMITted locally. 
-Once work is completed - 
-1. PUSH from local branch to the GitHub remote branch 
-2. Create Pull Request: eg. 
-   - https://github.com/drguptavivek/backend/pull/new/vivek/mcbook
+1. The 'main' branch contains all the main code - `git clone https://github.com/drguptavivek/backend.git; git checkout main`
+2. Create branches for development locally  `git branch vivek_mcbook; git checkout vivek_mcbook`
+3. All work done on the various machines will be COMMITted locally `git add; git commit `.  
+4. Once work is completed -PUSH from local branch to the GitHub remote / upstream  branch `git push -u origin vivek_mcbook` 
+5. Got to GitHub website and create a  PULL REQUEST (merge request): eg. 
+   - https://github.com/drguptavivek/backend/pull/new/vivek_mcbook
    - https://github.com/drguptavivek/backend/pull/new/desktop
-3. Merge the branch on GitHub with main
-4. Checkout the main on local machine
-5. 
+6. Merge the branch on GitHub website with `main` branch
+7. Checkout the `main` on local machine ``git remote show origin ; git checkout main ``
+   - Now the `main` on local desktop/laptop would be behind the server main
+8. Pull the changes from `main` on server to `main` on local - `git pull `
+
 
 ```shell
 git clone https://github.com/drguptavivek/backend.git
 git checkout main
 git remote show origin 
 git branch -a
+
 # Create branch for local work
 git branch vivek/mcbook
 git checkout vivek/mcbook
@@ -49,6 +51,15 @@ git push -u origin vivek/mcbook
 # remote: Create a pull request for 'vivek/mcbook' on GitHub by visiting:
 # remote:      https://github.com/drguptavivek/backend/pull/new/vivek/mcbook
 # merge on GitHub
+
+git remote show origin
+git checkout main
+git pull
+git branch --d vivek/mcbook
+git push origin --delete vivek/mcbook 
+git branch vivek/mcbook
+git checkout vivek/mcbook
+git branch -a
 
 ```
 
