@@ -1,4 +1,4 @@
-# ARCHITECTURING THE FLASK APP
+# ARCHITECTURE OF THE FLASK APP
  - APP CONTEXT: https://medium.com/hacking-and-slacking/demystifying-flasks-application-context-c7bd31a53817 
  - CONFIGS: https://www.digitalocean.com/community/tutorials/how-to-structure-a-large-flask-application-with-flask-blueprints-and-flask-sqlalchemy
  - TEMPLATES: https://realpython.com/flask-blueprint/#including-templates
@@ -10,8 +10,27 @@
 
 ## MAIN STEPS
 
+```shell
+git clone https://github.com/drguptavivek/backend.git
+git checkout main
+git remote show origin 
+git branch -a
+# Create branch for local work
+git branch vivek/mcbook
+git checkout vivek/mcbook
+git add 
+git commit  -m "About to Git push a local branch upstream to a remote GitHub repo."
+# Push local branch code to remote
+git push -u origin vivek/mcbook
+# remote: Create a pull request for 'vivek/mcbook' on GitHub by visiting:
+# remote:      https://github.com/drguptavivek/backend/pull/new/vivek/mcbook
+
+
+
+```
+
 ### CONFIGURATIONS
-- `config.py`: various configuration sets that can be called when initantiating the Flask app
+- `config.py`: various configuration sets that can be called when instantiating the Flask app
     - Each configuration set includes parameters. Non-secret configurations can be declared. Secret configs can be loaded from .env
 - `.env, .env.production`: various secrets that can be injected in each configuration inside config.py
 
@@ -40,7 +59,7 @@ https://flask-migrate.readthedocs.io/en/latest/
 
 
 ### Blueprints
-1. Create individual Blueprint specific folders inside views oor apis directory. eg admin
+1. Create individual Blueprint specific folders inside views oor apis directory. e.g. admin
 2. Create __init__.py inside the blueprint specific folder
 3. Create a Blueprint_bp.py file inside the blueprint specific folder
 4. Instantiate a blueprint object
@@ -72,7 +91,7 @@ For the most part, you should use SQLAlchemy as usual. The SQLAlchemy extension 
 ## SQLALchemy
  - use new Python Type Hinted Mapped_column syntax
 
-### One to Many Relationships: example Each department has many units
+### One-to-Many Relationships: example Each department has many units
 https://docs.sqlalchemy.org/en/20/orm/basic_relationships.html#one-to-many
 
 *Department* : One side   *Unit*: Many Side
@@ -90,19 +109,19 @@ Explanation
 
 ### Relationship Loading: lazy vs eager
  - select loader is a lazy loader and is default. The DB query for related object is delayed till that relationship attribute is accessed for the first time
- - joined loader is a eager loader - it accesses all related objects at teh same time as parent is called 
+ - joined loader is an eager loader - it accesses all related objects at teh same time as parent is called 
    -  useful if you know you will be accessing related objects
  - Other loaders: raise, raise_on_sql, selectin, write_only, immediate, noload
  - Default loader for a relationship can be changed using the `lazy=` argument
- - User Class- joined loader makes sense since it would be good to get the name of the designation as soon as a user is accessed
+ - For the User Class - joined loader makes sense since it would be good to get the name of the designation as soon as a user is accessed
 `designation: Mapped[Designation] = relationship(back_populates='users',  lazy='joined')`
  - For the Designation Class, select loader makes more sense as we may not want to typically get all users of designation
 
 ## Cascaded Operations - 
-- DETATCH children is parent deleted; GDo NOt BLOCK Parent deletion if children are present
+- DETATCH children is parent deleted; Do Not BLOCK Parent deletion if children are present
    - The FKey is ALLOWED  NULLS / Optional
    - cascade = 'save-update, merge'
-   - is teh DEFAULT behaviour
+   - is the DEFAULT behaviour
 ```
 class Department(db.Model):
     __tablename__ = "departments"
@@ -139,7 +158,7 @@ class Unit(db.Model):
 
 
  - DO not Delete the children if a prent gets deleted. 
-This is Optional to allow setting is to NULL in case a department gets deleted
+This is Optional to allow setting to NULL in case a department gets deleted
 
 
 
