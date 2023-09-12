@@ -11,6 +11,29 @@
 ## MAIN STEPS
 
 ```shell
+python3 -m venv vnev
+source venv/bin/activate
+rm -r migrations
+flask --app backend empty-db 
+flask db init
+flask db migrate
+flask db upgrade
+flask --app backend seed-db 
+```
+
+### VERSION CONTROL
+The 'main' branch contains all the main code
+The other branches will have code developed in various machines / users
+All work done on the various machines will be COMMITted locally. Then 
+1. PUSH from local branch to the GitHub remote branch 
+2. Create Pull Request: eg. 
+   - https://github.com/drguptavivek/backend/pull/new/vivek/mcbook
+   - https://github.com/drguptavivek/backend/pull/new/desktop
+3. Merge the branch on GitHub with main
+4. Checkout the main on local machine
+
+
+```shell
 git clone https://github.com/drguptavivek/backend.git
 git checkout main
 git remote show origin 
@@ -24,8 +47,7 @@ git commit  -m "About to Git push a local branch upstream to a remote GitHub rep
 git push -u origin vivek/mcbook
 # remote: Create a pull request for 'vivek/mcbook' on GitHub by visiting:
 # remote:      https://github.com/drguptavivek/backend/pull/new/vivek/mcbook
-
-
+# merge on GitHub
 
 ```
 
