@@ -9,10 +9,28 @@
 
 
 ## MAIN STEPS
+REQUIRES PYTHON 3.11 FOR THE ` | None` inside  `mobile2: Mapped[int | None] = mapped_column(String(30))` in SQLAlchemy Models
+use PIPENV to manage pythin versions. Mac os for example comes with 3.9 and a brew install would add 3.11 in a parallel location
+```shell
+git clone https://github.com/drguptavivek/backend.git
+cd backend
+
+python3 -m venv vnev
+ 
+# ALTERNATIVE
+pip install --user virtualenv
+virtualenv venv
+virtualenv -p /usr/bin/python3  venv 
+# Python 3.9.6
+
+# Install Python 3.11 from https://www.python.org
+virtualenv -p /usr/local/bin/python3 venv  
+virtualenv -p  /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11    venv
+```
 
 ```shell
-python3 -m venv vnev
 source venv/bin/activate
+pip install -r requirements.txt
 rm -r migrations
 flask --app backend empty-db 
 flask db init
@@ -70,29 +88,40 @@ git branch -a
 
 
 ## ORGANIZATION
-1. The app directory containes all application logic
-2. myApp/__init__.py includes the factory pattern for creation of Flask app
+1. The backend directory containes all application logic
+2. __init__.py includes the factory pattern for creation of Flask app
   - `config_class=DevConfig` means it will load the `DevConfig` configuration from `config.py` which loads secrets from `.env`
 
 
 ## Models inheritance / tree
-1. Initialize the SQLAlchemy db object in `myApp/db.py` : `db = SQLAlchemy()`
-2. Import and inject db object into the app in `myApp/__init__.py` inside the `create_app` factory :  `from myApp.db import db , db.init_app(app)`
-3. Creating Models:
-    - Create model in `myApp/models/blueprint_model.py`. 
-        - First import the `db` object from `myApp/db.py`
-        - Create the Model classes 
-    - Import the declared model classes in `myApp/db.py` at the bottom (to avoid circular imports): `from myApp.models import admin_models`
-
+1. Initialize the SQLAlchemy db objects and other extensions such as Migrate, Marshmallow etc in `extensions.py` : `db = SQLAlchemy()`
+2. Import extension objects in `__init__.py` inside the `create_app` factory, 
+3. Inject the initialized Extension objects in the app inside `app.app_context`
+4. Models:
+    - Create model in `backend/models/xxx_model.py`. 
+        - Import the `db` object from `myApp/db.py`
+        - Create the Model classes using the SQLAlchemy 2.0 Declarataive Syntax using Type Hints 
+    - Import the declared model classes in `models_import.py` : `from backend.models.user_model import Department,....`
+    - The models_import.py has already been made available inside the `app.app_context` in `__init__.py`. This allows Flask-Migrate to get all models and run migrations on them  
+5. Seeding: The db_initializer folder contains an  `db_initializer.py`
+   - `db.engine.url.database` - is used to get the current database name
+   - Functions such as `create_department(), create_faculty_cadre(), create_user()` have been created. Each function 
+     - Truncates the tables affected by that class - Table name is manually being set inside function. Foreign Key checks arr disabled and re-enabled
+     - Creates the objects of Model . Example - Department model class `department = Department(...)`
+     - Adds data for various named properties of the Model class
+     - Leverages relationships to add child objets using the related child Model properties: eg   `department = Department(... departmentUnits=[Unit(...), Unit(...),Unit(...)])`
+   - `click` is used to add commandline functions to EMPTY-DB and SEED-DB.  `@click.command('seed-db')     def seed_db_command():`
+   - `Click` Functions once declared in `db_initializer.py` are registered with the main __init__.py inside application context - `app.cli.add_command(seed_db_command)`
+   
 
 ## Migrations
 https://flask-migrate.readthedocs.io/en/latest/
-1. Import Flask Migrate in `myApp/__init__.py` inside the `create_app` factory
-2. Inject the created db and app objects in Migrate db object  `migrate = Migrate(app, db)` 
+1. Import and instantiate Flask Migrate in `extensions.py` 
+2. Inject the created db and app objects in Migrate db object  `migrate = Migrate(app, db)`   inside the `create_app` factory in `app.app_context`
 
 
 
-### Blueprints
+### Blueprints - TODO
 1. Create individual Blueprint specific folders inside views oor apis directory. e.g. admin
 2. Create __init__.py inside the blueprint specific folder
 3. Create a Blueprint_bp.py file inside the blueprint specific folder
@@ -102,7 +131,7 @@ https://flask-migrate.readthedocs.io/en/latest/
 
 
 
-## Templates:
+## Templates: - TODO
 - https://realpython.com/flask-blueprint/#including-templates
 
 
@@ -189,9 +218,7 @@ class Unit(db.Model):
     department: Mapped['Department'] = relationship(back_populates='units', lazy='joined')
 ```
 
-
-
- - DO not Delete the children if a prent gets deleted. 
+- DO not Delete the children if a prent gets deleted. 
 This is Optional to allow setting to NULL in case a department gets deleted
 
 
