@@ -10,8 +10,19 @@ from backend.models.user_model import Account, Department, Cadre, Designation, U
 # https://docs.sqlalchemy.org/en/20/orm/quickstart.html#create-objects-and-persist
 
 
-@click.command('init-db')
-def init_db_command():
+@click.command('empty-db')
+def empty_db_command():
+    """Seed the tables."""
+    drop_database()
+    click.echo('Deleted and Recreated the empty database. '
+               'Run --- '
+               'flask db init, '
+               'flask db migrate, '
+               'flask db upgrade')
+
+
+@click.command('seed-db')
+def seed_db_command():
     """Seed the tables."""
     create_department()
     create_faculty_cadre()
@@ -19,8 +30,21 @@ def init_db_command():
     click.echo('Seeded the database.')
 
 
+def drop_database():
+    database=db.engine.url.database
+    pp(database)
+    stmt1 = text('SET FOREIGN_KEY_CHECKS=0')
+    stmt2 = text('DROP DATABASE ' + database)
+    stmt3 = text('CREATE DATABASE ' + database)
+    stmt4 = text('SET FOREIGN_KEY_CHECKS=1')
+    db.session.execute(stmt1)
+    db.session.execute(stmt2)
+    db.session.execute(stmt3)
+    db.session.execute(stmt4)
+
+
 def create_department():
-    database = db.engine.url.database
+    database=db.engine.url.database
     pp(database)
     stmt1 = text('SET FOREIGN_KEY_CHECKS=0')
     stmt2 = text('TRUNCATE TABLE ' + database + '.departments')

@@ -28,9 +28,10 @@ def create_app():
         # Used by Flask-Migrate
         import backend.models_import
 
-        # Registed the " flask --app backend init-db" command 
-        from backend.db_initializer.db_initializer import init_db_command
-        app.cli.add_command(init_db_command)
+        # Register the " flask --app backend init-db" command
+        from backend.db_initializer.db_initializer import seed_db_command, empty_db_command
+        app.cli.add_command(seed_db_command)
+        app.cli.add_command(empty_db_command)
 
         # Importing routes
         
