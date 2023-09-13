@@ -9,8 +9,9 @@
 
 
 ## MAIN STEPS
-REQUIRES PYTHON 3.11 FOR THE ` | None` inside  `mobile2: Mapped[int | None] = mapped_column(String(30))` in SQLAlchemy Models
-use virtualenv to manage python versions. macOS for example comes with 3.9 and a brew install would add 3.11 in a parallel location
+- REQUIRES PYTHON 3.11 FOR THE ` | None` inside  `mobile2: Mapped[int | None] = mapped_column(String(30))` in SQLAlchemy Models.
+- Use `virtualenv` to manage python versions. macOS for example comes with 3.9 and one can install version 3.11 in a parallel location by downloading installer from python.org
+
 ```shell
 git clone https://github.com/drguptavivek/backend.git
 cd backend
