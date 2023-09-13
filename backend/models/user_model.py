@@ -51,8 +51,8 @@ class Department(db.Model):
     abbr: Mapped[str | None] = mapped_column(String(10))
     type: Mapped[str] = mapped_column(String(30))  # department, centre
 
-    departmentUnits: Mapped[list['Unit']] = relationship(back_populates='unitDepartment', lazy='joined')
-    departmentUsers: Mapped[list['User']] = relationship(back_populates='userDepartment', lazy='joined')
+    departmentUnits: Mapped[list['Unit']] = relationship(back_populates='unitDepartment')
+    departmentUsers: Mapped[list['User']] = relationship(back_populates='userDepartment')
     departmentHead: Mapped[list[User]] = relationship(secondary='departmentHeads',
                                                       back_populates='userHeadOfDepartment')
 
@@ -67,12 +67,13 @@ class Unit(db.Model):
     abbr: Mapped[str] = mapped_column(String(10))
     department_id: Mapped[str] = mapped_column(ForeignKey('departments.id'), index=True)
    
-    unitDepartment: Mapped['Department'] = relationship(back_populates='departmentUnits', lazy='joined')
-    unitUsers: Mapped[list['User']] = relationship(back_populates='userUnit', lazy='joined')
+    unitDepartment: Mapped['Department'] = relationship(back_populates='departmentUnits')
+    unitUsers: Mapped[list['User']] = relationship(back_populates='userUnit')
     unitHead: Mapped[list[User]] = relationship(secondary='unitHeads', back_populates='userHeadOfUnit')
 
     def __repr__(self):
-        return f'Unit({self.id}, "{self.name}")'
+        return (f'UNIT: (id = {self.id}, name = {self.name}, unitDepartment.abbr = {self.unitDepartment.abbr}, '
+                f'unitDepartment.id = {self.unitDepartment.id})')
 
 
 class Designation(db.Model):
@@ -86,7 +87,8 @@ class Designation(db.Model):
     designationUsers: Mapped[list['User']] = relationship(back_populates='userDesignation')
 
     def __repr__(self):
-        return f'Designation({self.id}, "{self.name}")'
+        return (f'DESIGNATION: (id = {self.id}, name = "{self.name}", '
+                f'cadre_id = {self.cadre_id}, cadre_name = {self.cadre.name})')
 
 
 class Cadre(db.Model):
@@ -98,7 +100,7 @@ class Cadre(db.Model):
     cadreUsers: Mapped[list[User]] = relationship(back_populates='userCadre')
 
     def __repr__(self):
-        return f'Cadre({self.id}, "{self.name}")'
+        return f'CADRE: ({self.id}, "{self.name}")'
 
 
 class User(db.Model):
@@ -108,16 +110,15 @@ class User(db.Model):
     employee_id: Mapped[str] = mapped_column(String(15))
     email: Mapped[str] = mapped_column(String(30), unique=True)
     mobile: Mapped[int] = mapped_column(String(30))
-    email2: Mapped[str | None] = mapped_column(String(30), unique=True)
-    email3: Mapped[str | None] = mapped_column(String(30), unique=True)
+    email2: Mapped[str | None] = mapped_column(String(30))
+    email3: Mapped[str | None] = mapped_column(String(30))
     mobile2: Mapped[int | None] = mapped_column(String(30))
     mobile3: Mapped[int | None] = mapped_column(String(30))
     officeAddress: Mapped[str | None] = mapped_column(String(60))
-    department_id: Mapped[str] = mapped_column(ForeignKey('departments.id'), index=True)
-    unit_id: Mapped[str | None] = mapped_column(ForeignKey('units.id'), index=True)  
-    designation_id: Mapped[str] = mapped_column(ForeignKey('designations.id'), index=True)    
-    designation_group_id: Mapped[str | None] = mapped_column(ForeignKey('cadres.id'), index=True)
-    
+    department_id: Mapped[int] = mapped_column(ForeignKey('departments.id'), index=True)
+    unit_id: Mapped[int | None] = mapped_column(ForeignKey('units.id'), index=True)
+    designation_id: Mapped[int] = mapped_column(ForeignKey('designations.id'), index=True)
+    cadre_id: Mapped[int | None] = mapped_column(ForeignKey('cadres.id'), index=True)
     create_date: Mapped[datetime] = mapped_column(server_default=func.now())
     inactive: Mapped[int] = mapped_column(Integer, server_default='0')
     inactive_date: Mapped[datetime | None] = mapped_column(server_default=func.now())
@@ -125,21 +126,19 @@ class User(db.Model):
     # HANDLED AT PROGRAM LEVEL    
     created_by: Mapped[int | None] = mapped_column(Integer)
     inactive_by: Mapped[int | None] = mapped_column(Integer)
-
-    userDepartment: Mapped[Department] = relationship(back_populates='departmentUsers', lazy='joined') 
-    userUnit: Mapped[Unit] = relationship(back_populates='unitUsers', lazy='joined') 
-    userDesignation: Mapped[Designation] = relationship(back_populates='designationUsers',  lazy='joined')
-    userCadre: Mapped[Cadre] = relationship(back_populates='cadreUsers',  lazy='joined')
-
+    userDepartment: Mapped[Department] = relationship(back_populates='departmentUsers')
+    userUnit: Mapped[Unit] = relationship(back_populates='unitUsers')
+    userDesignation: Mapped[Designation] = relationship(back_populates='designationUsers')
+    userCadre: Mapped[Cadre] = relationship(back_populates='cadreUsers')
     userHeadOfUnit: Mapped[list[Unit]] = relationship(secondary='unitHeads', back_populates="unitHead")
     userHeadOfDepartment: Mapped[list[Department]] = relationship(secondary='departmentHeads',
                                                                   back_populates='departmentHead')
     userAccount: Mapped[List[Account]] = relationship(back_populates='accountBelongsToUser')
-
     # One user can have multiple accounts
 
     def __repr__(self):
-        return f'User({self.id}, "{self.fullname}")'
+        return (f'USER: (id = {self.id}, fullname = {self.fullname}, employee_id = {self.employee_id}, '
+                f'userCadre = {self.userCadre.name}, userDepartment = {self.userDepartment.abbr})')
 
 
 class UnitHead(db.Model):

@@ -31,6 +31,7 @@ virtualenv -p  /Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11
 ```shell
 source venv/bin/activate
 pip install -r requirements.txt
+
 rm -r migrations
 flask --app backend empty-db 
 flask db init
@@ -60,24 +61,50 @@ git remote show origin
 git branch -a
 
 # Create branch for local work
-git branch vivek/mcbook
-git checkout vivek/mcbook
+git branch vivek_mcbook
+git checkout vivek_mcbook
 git add 
 git commit  -m "About to Git push a local branch upstream to a remote GitHub repo."
 # Push local branch code to remote
-git push -u origin vivek/mcbook
+git push -u origin vivek_mcbook
 # remote: Create a pull request for 'vivek/mcbook' on GitHub by visiting:
-# remote:      https://github.com/drguptavivek/backend/pull/new/vivek/mcbook
-# merge on GitHub
+# remote:      https://github.com/drguptavivek/backend/pull/new/vivek_mcbook
+# merge on GitHub; Delete remote  vivek_mcbook on GitHub
 
+
+# Back on Laptop
 git remote show origin
 git checkout main
 git pull
-git branch --d vivek/mcbook
-git push origin --delete vivek/mcbook 
-git branch vivek/mcbook
-git checkout vivek/mcbook
+git branch --d vivek_mcbook
+git push origin --delete vivek_mcbook
+git branch vivek_mcbook
+git checkout vivek_mcbook
 git branch -a
+git add 
+git commit  -m "About to Git push a local branch upstream to a remote GitHub repo."
+# Push local branch code to remote
+git push -u origin vivek_mcbook
+# merge on GitHub; Delete remote  vivek_mcbook on GitHub
+
+
+
+# Back on Desktop
+git remote show origin
+git checkout main
+git pull
+git branch --d vivek_desktop # Detach / delete preexisting local branch vivek_desktop
+git push origin --delete vivek_desktop # Detach / delete preexisting REMOTE branch vivek_desktop
+
+git branch vivek_desktop
+git checkout vivek_desktop
+git branch -a
+git add 
+git commit  -m "About to Git push a local branch vivek_desktop upstream to a remote GitHub repo at vivek_desktop."
+# Push local branch code to remote
+git push -u origin vivek_desktop 
+# merge vivek_desktop with main on GitHub; Delete remote  vivek_desktop on GitHub
+
 
 ```
 
