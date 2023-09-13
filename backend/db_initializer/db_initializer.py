@@ -1,10 +1,10 @@
 import logging
 from pprint import pp
 import click
-from sqlalchemy.sql import text
+from sqlalchemy.sql import text, select
 
-from backend.extensions import db
-from backend.models.user_model import Account, Department, Cadre, Designation, Unit, User
+from backend.extensions import db, print_rows
+from backend.models.user_model import Department, Cadre, Designation, Unit, User
 
 # https://github.com/melihcolpan/flask-restful-login/blob/master/api/db_initializer/db_initializer.py
 # https://docs.sqlalchemy.org/en/20/orm/quickstart.html#create-objects-and-persist
@@ -31,7 +31,7 @@ def seed_db_command():
 
 
 def drop_database():
-    database=db.engine.url.database
+    database = db.engine.url.database
     pp(database)
     stmt1 = text('SET FOREIGN_KEY_CHECKS=0')
     stmt2 = text('DROP DATABASE ' + database)
@@ -44,8 +44,8 @@ def drop_database():
 
 
 def create_department():
-    database=db.engine.url.database
-    pp(database)
+    database = db.engine.url.database
+
     stmt1 = text('SET FOREIGN_KEY_CHECKS=0')
     stmt2 = text('TRUNCATE TABLE ' + database + '.departments')
     stmt3 = text('TRUNCATE TABLE ' + database + '.units')
@@ -54,7 +54,7 @@ def create_department():
     db.session.execute(stmt2)
     db.session.execute(stmt3)
     db.session.execute(stmt4)
-
+    print(f'Truncated {database}.departments and {database}.units')
     department = Department.query.filter_by(abbr="RPC").first()
     if department is None:
         department = Department(
@@ -73,9 +73,11 @@ def create_department():
         )
         db.session.add(department)
         db.session.commit()
+        print("Department RPC was Added with 6 units and Ocular anaesthesia.")
         logging.info("Department RPC was Added.")
 
     else:
+        print("department RPC already set.")
         logging.info("department RPC already set.")
 
     department = Department.query.filter_by(abbr="Anaes").first()
@@ -87,10 +89,24 @@ def create_department():
         )
         db.session.add(department)
         db.session.commit()
+        print("Department Anaesthesiology was Added.")
         logging.info("Department Anaesthesiology was Added.")
 
     else:
+        print("department Anaesthesiology already set.")
         logging.info("department Anaesthesiology already set.")
+
+    query = select(Department)
+    # print(f'{query}')
+    departments = db.session.execute(query).all()
+    print('  ALL DEPARTMENTS')
+    print_rows(departments)
+
+    query = select(Unit)
+    # print(f'{query}')
+    units = db.session.execute(query).all()
+    print(f'  All Units : ')
+    print_rows(units)
 
 
 def create_faculty_cadre():
@@ -103,6 +119,8 @@ def create_faculty_cadre():
     db.session.execute(stmt2)
     db.session.execute(stmt3)
     db.session.execute(stmt4)
+    print(f'Truncated {database}.cadres and {database}.designations')
+
     cadre = Cadre.query.filter_by(name="Faculty").first()
     if cadre is None:
         cadre = Cadre(
@@ -116,10 +134,19 @@ def create_faculty_cadre():
         )
         db.session.add(cadre)
         db.session.commit()
-        logging.info(f"Faculty Cadre and Designations Added.")
-
+        logging.info(f"  Faculty Cadre and Designations Added.")
     else:
-        logging.info(f"Faculty Cadre and Designations already set.")
+        logging.info(f"  Faculty Cadre and Designations already set.")
+
+    query = select(Cadre)
+    cadres = db.session.execute(query).all()
+    print('  ALL CADRES')
+    print_rows(cadres)
+
+    query = select(Designation)
+    designations = db.session.execute(query).all()
+    print('  ALL DESIGNATIONS')
+    print_rows(designations)
 
 
 def create_user():
@@ -130,27 +157,44 @@ def create_user():
     db.session.execute(stmt1)
     db.session.execute(stmt2)
     db.session.execute(stmt4)
-    user = User.query.filter_by(email="vivekgupta@aiims.gov.in").first()
-    if user is None:
-        user = User(
-            fullname="Dr Vivek Gupta",
-            employee_id="E100056",
-            email="vivekgupta@aiims.gov.in",
-            mobile="9899410420",
-            department_id="1",
-            designation_id="3",
-            inactive="0",
+    print(f'Truncated {database}.users')
+    query = select(Cadre.id).where(Cadre.name == "Faculty")
+    cadre_id = db.session.scalar(query)
+    print(f'  CADRE ID for faculty = {cadre_id}')
+    query = select(Designation.id).where(Designation.name == "Additional Professor", Designation.cadre_id == cadre_id)
+    designation_id = db.session.scalar(query)
+    print(f'  Designation ID for Faculty Cadre Additional Professor  = {designation_id}')
+    query = select(Department.id).where(Department.name == "Dr RP Center for Ophthalmic Sciences")
+    department_id = db.session.scalar(query)
+    print(f'  Department_id for Dr RP Center for Ophthalmic Sciences = {department_id}')
+    query = select(User.id).where(User.fullname == "Dr Vivek Gupta", User.employee_id == "E100056")
+    existing_user = db.session.execute(query).one_or_none()
+    print(f'  USERS already in table  = {existing_user}')
+
+    if existing_user is None:
+        new_user = User(
+            fullname='Dr Vivek Gupta',
+            employee_id="XXXXXXXX",
+            email="vivekguptaXXXXX@aiims.gov.in",
+            mobile="XXXXXXXX",
+            department_id=department_id,
+            cadre_id=cadre_id,
+            designation_id=designation_id,
+            inactive="0"
         )
-        db.session.add(user)
+        db.session.add(new_user)
         db.session.commit()
-        logging.info(f"User Vivek Gupta Added.")
+        print(f"  User Vivek Gupta Added.")
+        logging.info(f"  User Vivek Gupta Added.")
 
     else:
-        logging.info(f"User Vivek Gupta already set.")
+        print(f"  User Vivek Gupta, Employee ID E100056 already set.")
+        logging.info(f"  User Vivek Gupta, Employee ID E100056 already set.")
 
-
-
-
+    query = select(User)
+    users = db.session.execute(query).all()
+    print(f'  ALL USERS')
+    print_rows(users)
 
 
 # def create_cadre():
