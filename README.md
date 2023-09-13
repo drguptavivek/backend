@@ -166,7 +166,10 @@ https://flask-migrate.readthedocs.io/en/latest/
 ## FLASK_SQLAlchemy
 https://flask-sqlalchemy.palletsprojects.com/en/3.0.x/quickstart/
 https://blog.miguelgrinberg.com/post/what-s-new-in-sqlalchemy-2-0
- - SQLAlchemy 2 In Practice: Learn to program relational databases in Python step by step
+
+BOOK - SQLAlchemy 2 In Practice: Learn to program relational databases in Python step by step
+https://www.amazon.in/SQLAlchemy-Practice-program-relational-databases-ebook/dp/B0BVJRKS54
+
 
 For the most part, you should use SQLAlchemy as usual. The SQLAlchemy extension instance creates, configures, and gives access to the following things:
 - `SQLAlchemy.Model` declarative model base class. It sets the table name automatically instead of needing `__tablename__`.
