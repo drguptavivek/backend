@@ -3,7 +3,8 @@ from datetime import datetime
 from typing import List
 from sqlalchemy import Integer,  String, Column, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
+import uuid
+from sqlalchemy import Uuid
 from backend.extensions import db
 
 
@@ -11,12 +12,13 @@ class Account(db.Model):
     __tablename__ = "accounts"
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(String(30), unique=True, index=True)
+    uid: Mapped[uuid.UUID] = mapped_column(Uuid, default=uuid.uuid4, unique=True, insert_sentinel=True)
     password: Mapped[str] = mapped_column(String(50))
-    created_by: Mapped[str] = mapped_column(ForeignKey('accounts.id'))
+    created_by: Mapped[int] = mapped_column(ForeignKey('accounts.id'))
     create_date: Mapped[datetime] = mapped_column(server_default=func.now())
     inactive: Mapped[int] = mapped_column(Integer, server_default='0')
     inactive_date: Mapped[datetime | None] = mapped_column(server_default=func.now())
-    inactive_by: Mapped[str | None] = mapped_column(ForeignKey('accounts.id'))
+    inactive_by: Mapped[int | None] = mapped_column(ForeignKey('accounts.id'))
 
     user_id: Mapped[int | None] = mapped_column(ForeignKey('users.id'))
     accountBelongsToUser: Mapped[User | None] = relationship(back_populates='userAccount')
