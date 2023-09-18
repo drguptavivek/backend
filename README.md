@@ -1,11 +1,4 @@
 # ARCHITECTURE OF THE FLASK APP
- - APP CONTEXT: https://medium.com/hacking-and-slacking/demystifying-flasks-application-context-c7bd31a53817 
- - CONFIGS: https://www.digitalocean.com/community/tutorials/how-to-structure-a-large-flask-application-with-flask-blueprints-and-flask-sqlalchemy
- - TEMPLATES: https://realpython.com/flask-blueprint/#including-templates
- - FLASK MIGRATE- https://rest-apis-flask.teclado.com/docs/flask_migrate/add_flask_migrate_to_app/
- - https://levelup.gitconnected.com/remove-pycache-vscode-6c9204399913
- - https://github.com/MGough/flask-microservice-sqlalchemy-marshmallow/blob/master/business/application_factory.py
- - https://medium.com/@jesscsommer/how-to-serialize-and-validate-your-data-with-marshmallow-a815b2276a
 
 
 ## MAIN STEPS
@@ -72,7 +65,6 @@ git push -u origin vivek_macbook
 # remote:      https://github.com/drguptavivek/backend/pull/new/vivek_macbook
 # merge on GitHub; Delete remote  vivek_macbook on GitHub
 
-
 # Back on Laptop
 git remote show origin
 git checkout main
@@ -106,7 +98,6 @@ git commit  -m "About to Git push a local branch vivek_desktop upstream to a rem
 git push -u origin vivek_desktop 
 # merge vivek_desktop with main on GitHub; Delete remote  vivek_desktop on GitHub
 
-
 ```
 
 ### CONFIGURATIONS
@@ -114,12 +105,10 @@ git push -u origin vivek_desktop
     - Each configuration set includes parameters. Non-secret configurations can be declared. Secret configs can be loaded from .env
 - `.env, .env.production`: various secrets that can be injected in each configuration inside config.py
 
-
 ## ORGANIZATION
 1. The backend directory contains all application logic
 2. __init__.py includes the factory pattern for creation of Flask app
   - `config_class=DevConfig` means it will load the `DevConfig` configuration from `config.py` which loads secrets from `.env`
-
 
 ## Models inheritance / tree
 1. Initialize the SQLAlchemy db objects and other extensions such as Migrate, Marshmallow etc. in `extensions.py` : `db = SQLAlchemy()`
@@ -140,7 +129,6 @@ git push -u origin vivek_desktop
      - Leverages relationships to add child objets using the related child Model properties: eg   `department = Department(... departmentUnits=[Unit(...), Unit(...),Unit(...)])`
    - `click` is used to add commandline functions to EMPTY-DB and SEED-DB.  `@click.command('seed-db')     def seed_db_command():`
    - `Click` Functions once declared in `db_initializer.py` are registered with the main __init__.py inside application context - `app.cli.add_command(seed_db_command)`
-   
 
 ## Migrations
 https://flask-migrate.readthedocs.io/en/latest/
@@ -149,38 +137,7 @@ https://flask-migrate.readthedocs.io/en/latest/
 
 
 
-### Blueprints - TODO
-1. Create individual Blueprint specific folders inside views oor apis directory. e.g. admin
-2. Create __init__.py inside the blueprint specific folder
-3. Create a Blueprint_bp.py file inside the blueprint specific folder
-4. Instantiate a blueprint object
-5. Add Blueprint Views
-6. Register the blueprint with its URL prefix in myApp/__init__.py
 
-
-
-## Templates: - TODO
-- https://realpython.com/flask-blueprint/#including-templates
-
-
-## FLASK_SQLAlchemy
-https://flask-sqlalchemy.palletsprojects.com/en/3.0.x/quickstart/
-https://blog.miguelgrinberg.com/post/what-s-new-in-sqlalchemy-2-0
-
-BOOK - SQLAlchemy 2 In Practice: Learn to program relational databases in Python step by step
-https://www.amazon.in/SQLAlchemy-Practice-program-relational-databases-ebook/dp/B0BVJRKS54
-
-
-For the most part, you should use SQLAlchemy as usual. The SQLAlchemy extension instance creates, configures, and gives access to the following things:
-- `SQLAlchemy.Model` declarative model base class. It sets the table name automatically instead of needing `__tablename__`.
-- `SQLAlchemy.session` is a session that is scoped to the current Flask application context. It is cleaned up after every request.
-- `SQLAlchemy.metadata` and `SQLAlchemy.metadata` gives access to each metadata defined in the config.
-- `SQLAlchemy.engine` and `SQLAlchemy.engines` gives access to each engine defined in the config.
-- `SQLAlchemy.create_all()` creates all tables.
-- You must be in an *active Flask application context* to execute queries and to access the session and engine.
- - For convenience, the extension object provides access to names in the sqlalchemy and sqlalchemy.orm modules. 
-   - So you can use db.Column instead of importing and using sqlalchemy.Column, although the two are equivalent.
- - 
 
 ## SQLAlchemy
  - use new Python Type Hinted Mapped_column syntax
@@ -213,7 +170,7 @@ Explanation
    - *HOWEVER, joined loader causes problems with SELECT statements necessitating the need of UNIQUE() otherwise multiple related rows are fetched*
  - For the Designation Class, select loader makes more sense as we may not want to typically get all users of designation
 
-## Cascaded Operations - 
+### Cascaded Operations - 
 - DETACH children is parent deleted; Do Not BLOCK Parent deletion if children are present
    - The FKey is ALLOWED  NULLS / Optional
    - cascade = 'save-update, merge'
@@ -255,24 +212,20 @@ class Unit(db.Model):
 This is Optional to allow setting to NULL in case a department gets deleted
 
 
-
-   
-
-## Marshmallow
-http://marshmallow.readthedocs.io/
-## Flask-marshmallow
-https://flask-marshmallow.readthedocs.io/en/latest/
-Flask-Marshmallow is a thin integration layer for Flask (a Python web framework) and marshmallow (an object serialization/deserialization library) that  
- - adds additional features to marshmallow, 
- - including URL and Hyperlinks fields for HATEOAS-ready APIs. 
- - It also (optionally) integrates with Flask-SQLAlchemy.
- - Generate marshmallow Schemas from your models using `SQLAlchemySchema` or `SQLAlchemyAutoSchema`.
- - SQLAlchemySchema is nearly identical in API to marshmallow_sqlalchemy.SQLAlchemySchema with the following exceptions:
-   - By default, SQLAlchemySchema uses the scoped session created by Flask-SQLAlchemy.
-   - SQLAlchemySchema subclasses flask_marshmallow.Schema, so it includes the jsonify method.
+## Marshmallow Schemas
+Declare schemas in 'schemas' folder
 
 
 
-## marshmallow-sqlalchemy - DO NOT USE AS FLASK MARSHMALLOW ALREADY INCLUDES SQLALCHEMY INTEGRATION
-https://marshmallow-sqlalchemy.readthedocs.io/en/latest/
-Make sure to declare Models before instantiating Schemas. Otherwise, sqlalchemy.orm.configure_mappers() will run too soon and fail.
+## Blueprints - TODO
+1. Create individual Blueprint specific folders inside views oor apis directory. e.g. admin
+2. Create __init__.py inside the blueprint specific folder
+3. Create a Blueprint_bp.py file inside the blueprint specific folder
+4. Instantiate a blueprint object
+5. Add Blueprint Views
+6. Register the blueprint with its URL prefix in myApp/__init__.py
+
+
+
+## Templates: - TODO
+- https://realpython.com/flask-blueprint/#including-templates
